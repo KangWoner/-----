@@ -1,0 +1,6 @@
+{
+  "name": "Copy of 논술형 수학 AI 교사 드라이브 연결형",
+  "description": "학생들이 논술형 수학 문제에 대한 답을 제출하면 AI가 루브릭을 기반으로 채점하고 상세한 피드백을 제공하는 반응형 교재 애플리케이션입니다.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
