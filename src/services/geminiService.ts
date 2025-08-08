@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import type { Problem, SubmissionFormData } from '../types';
 
 // IMPORTANT: This is a client-side implementation and is NOT SECURE.
@@ -5,7 +6,7 @@ import type { Problem, SubmissionFormData } from '../types';
 // This logic should be moved to a secure backend server that makes the API call.
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}`;
 
 function buildPrompt(problems: Problem[], formData: SubmissionFormData): string {
   const problemTexts = problems.map((p, index) => {
@@ -44,7 +45,7 @@ export async function evaluateAnswers(problems: Problem[], formData: SubmissionF
 ## AI 평가 결과 (Mock Data)
 
 **API 키가 제공되지 않아 실제 평가를 수행할 수 없습니다.**
-아래는 샘플 평가 결과입니다. `.env.local` 파일에 `VITE_GEMINI_API_KEY`를 설정해주세요.
+아래는 샘플 평가 결과입니다. \`.env.local\` 파일에 \`VITE_GEMINI_API_KEY\`를 설정해주세요.
 
 ---
 
