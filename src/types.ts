@@ -2,6 +2,8 @@ export interface Problem {
   id: string;
   title: string;
   description: string;
+  attachmentUrl?: string;
+  attachmentType?: 'image' | 'pdf';
 }
 
 export interface SubmissionFormData {

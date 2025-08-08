@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { Problem } from '../types';
+import * as googleDriveService from '../services/googleDriveService';
 
 interface ProblemGeneratorProps {
   setActiveProblems: (problems: Problem[]) => void;
@@ -8,22 +9,46 @@ interface ProblemGeneratorProps {
 
 const ProblemGenerator: React.FC<ProblemGeneratorProps> = ({ setActiveProblems, isGoogleSignedIn }) => {
   const [customProblem, setCustomProblem] = useState('');
+  const [attachment, setAttachment] = useState<File | null>(null);
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     // This is a placeholder. In a real app, this would involve an API call to a generative AI model.
     if (!customProblem.trim()) {
         alert("문제 내용을 입력해주세요.");
         return;
     }
+
+    let attachmentUrl: string | undefined;
+    let attachmentType: 'image' | 'pdf' | undefined;
+
+    if (attachment) {
+        if (!isGoogleSignedIn) {
+            alert('파일 업로드를 위해 Google Drive에 연결해야 합니다.');
+            return;
+        }
+        try {
+            const { fileUrl } = await googleDriveService.uploadFile(attachment);
+            attachmentUrl = fileUrl;
+            attachmentType = attachment.type.startsWith('image/') ? 'image' : 'pdf';
+        } catch (err) {
+            const message = err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.';
+            alert(`파일 업로드 실패: ${message}`);
+            return;
+        }
+    }
+
     const newProblem: Problem = {
       id: `custom-${new Date().getTime()}`,
       title: '사용자 정의 문제',
       description: customProblem,
+      attachmentUrl,
+      attachmentType,
     };
     // For simplicity, this replaces all existing problems.
     // A real implementation might want to add to the list.
     setActiveProblems([newProblem]);
     setCustomProblem('');
+    setAttachment(null);
     alert("새로운 문제가 생성되어 적용되었습니다.");
   };
 
@@ -42,6 +67,21 @@ const ProblemGenerator: React.FC<ProblemGeneratorProps> = ({ setActiveProblems, 
           className="w-full px-4 py-2 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
           placeholder="예: 피타고라스의 정리를 증명하고 실생활 예시를 들어보세요."
         />
+        <div>
+          <input
+            type="file"
+            accept="image/*,application/pdf"
+            onChange={(e) => setAttachment(e.target.files?.[0] || null)}
+            className="block w-full text-sm text-purple-700"
+            disabled={!isGoogleSignedIn}
+          />
+          {!isGoogleSignedIn && (
+            <p className="text-xs text-purple-600 mt-1">파일 업로드는 Google Drive 연결 후 가능합니다.</p>
+          )}
+          {attachment && (
+            <p className="text-xs text-purple-700 mt-1">선택된 파일: {attachment.name}</p>
+          )}
+        </div>
         <div className="flex justify-end space-x-2">
             <button
                 onClick={handleGenerate}
