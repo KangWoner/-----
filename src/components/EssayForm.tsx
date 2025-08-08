@@ -64,6 +64,20 @@ const EssayForm: React.FC<EssayFormProps> = ({ problems, onFormSubmit, isLoading
                 <div key={problem.id} className="border-t border-slate-200 pt-6">
                     <h3 className="font-semibold text-lg text-slate-800">{problem.title}</h3>
                     <p className="text-slate-600 mt-1 mb-4">{problem.description}</p>
+                    {problem.attachmentUrl && (
+                        problem.attachmentType === 'image' ? (
+                            <img src={problem.attachmentUrl} alt="첨부 이미지" className="mb-4 max-w-full h-auto" />
+                        ) : (
+                            <a
+                              href={problem.attachmentUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 underline mb-4 block"
+                            >
+                              첨부 파일 보기
+                            </a>
+                        )
+                    )}
                     <textarea
                         rows={8}
                         value={answers[problem.id] || ''}
