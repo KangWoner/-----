@@ -52,3 +52,93 @@
 현재 Google Drive 연동 기능(`signIn`, `signOut`, `saveSubmissionToSheet`)은 실제 API를 호출하지 않는 **모의(mock) 구현**으로 되어 있습니다. (`src/services/googleDriveService.ts` 참조).
 
 실제 기능을 구현하려면 Google Cloud Platform에서 OAuth 2.0 클라이언트 ID를 설정하고, Google API 클라이언트 라이브러리를 프로젝트에 통합하는 복잡한 과정이 필요합니다. 이 모의 서비스는 전체적인 앱의 흐름을 테스트할 수 있도록 최소한의 기능을 시뮬레이션합니다.
+
+---
+
+## CSV 성적표 분석 도구
+
+이 프로젝트에는 Python으로 작성된 CSV 성적표 분석 및 시각화 도구가 포함되어 있습니다.
+
+### 기능
+
+- CSV 파일에서 성적 데이터 로드
+- 과목별 통계 분석 (평균, 중앙값, 최고점, 최저점, 표준편차)
+- 총점 및 등수 자동 계산
+- 다양한 시각화 생성:
+  - 과목별 점수 분포 히스토그램
+  - 박스 플롯 (과목 간 비교)
+  - 상관관계 히트맵
+  - 총점 순위 차트
+- 분석 결과를 텍스트 파일로 저장
+
+### Python 환경 설정
+
+**사전 요구사항:** Python 3.8 이상이 설치되어 있어야 합니다.
+
+1. **가상 환경 생성 (권장):**
+   ```bash
+   python -m venv venv
+
+   # Windows
+   venv\Scripts\activate
+
+   # macOS/Linux
+   source venv/bin/activate
+   ```
+
+2. **의존성 설치:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+### 사용 방법
+
+1. **샘플 데이터로 테스트:**
+   ```bash
+   python analyze.py grades.csv
+   ```
+
+2. **자신의 CSV 파일 분석:**
+   ```bash
+   python analyze.py 내파일.csv
+   ```
+
+3. **출력 디렉토리 지정:**
+   ```bash
+   python analyze.py grades.csv -o results
+   ```
+
+4. **시각화 없이 통계만 확인:**
+   ```bash
+   python analyze.py grades.csv --no-viz
+   ```
+
+### CSV 파일 형식
+
+CSV 파일은 다음과 같은 형식이어야 합니다:
+
+```csv
+이름,수학,영어,과학,국어
+김철수,85,90,78,88
+이영희,92,88,95,91
+```
+
+- 첫 번째 행: 헤더 (과목명)
+- 첫 번째 열: 학생 이름 (선택사항)
+- 나머지 열: 숫자 형식의 점수
+
+### 출력 결과
+
+분석을 실행하면 `output/` 폴더(또는 지정한 폴더)에 다음 파일들이 생성됩니다:
+
+- `distribution.png` - 과목별 점수 분포 히스토그램
+- `boxplot.png` - 과목별 박스 플롯
+- `correlation.png` - 과목 간 상관관계 히트맵
+- `ranking.png` - 총점 기준 순위 차트
+- `summary.txt` - 통계 분석 결과 텍스트 파일
+
+### 도움말
+
+```bash
+python analyze.py --help
+```
