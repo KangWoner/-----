@@ -2,6 +2,10 @@ export interface Problem {
   id: string;
   title: string;
   description: string;
+  attachment?: {
+    name: string;
+    url: string;
+  };
 }
 
 export interface SubmissionFormData {
