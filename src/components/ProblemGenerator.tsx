@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { Problem } from '../types';
+import { uploadFileToDrive } from '../services/googleDriveService';
 
 interface ProblemGeneratorProps {
   setActiveProblems: (problems: Problem[]) => void;
@@ -8,8 +9,8 @@ interface ProblemGeneratorProps {
 
 const ProblemGenerator: React.FC<ProblemGeneratorProps> = ({ setActiveProblems, isGoogleSignedIn }) => {
   const [customProblem, setCustomProblem] = useState('');
-
-  const handleGenerate = () => {
+  const [file, setFile] = useState<File | null>(null);
+  const handleGenerate = async () => {
     // This is a placeholder. In a real app, this would involve an API call to a generative AI model.
     if (!customProblem.trim()) {
         alert("문제 내용을 입력해주세요.");
@@ -20,10 +21,15 @@ const ProblemGenerator: React.FC<ProblemGeneratorProps> = ({ setActiveProblems, 
       title: '사용자 정의 문제',
       description: customProblem,
     };
+    if (file && isGoogleSignedIn) {
+      const { url } = await uploadFileToDrive(file);
+      newProblem.attachment = { name: file.name, url };
+    }
     // For simplicity, this replaces all existing problems.
     // A real implementation might want to add to the list.
     setActiveProblems([newProblem]);
     setCustomProblem('');
+    setFile(null);
     alert("새로운 문제가 생성되어 적용되었습니다.");
   };
 
@@ -41,6 +47,11 @@ const ProblemGenerator: React.FC<ProblemGeneratorProps> = ({ setActiveProblems, 
           onChange={(e) => setCustomProblem(e.target.value)}
           className="w-full px-4 py-2 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
           placeholder="예: 피타고라스의 정리를 증명하고 실생활 예시를 들어보세요."
+        />
+        <input
+          type="file"
+          data-testid="file-input"
+          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
         />
         <div className="flex justify-end space-x-2">
             <button

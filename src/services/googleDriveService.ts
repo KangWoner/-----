@@ -73,3 +73,22 @@ export async function saveSubmissionToSheet(submission: Submission): Promise<{ s
 
   return { sheetUrl };
 }
+
+/**
+ * Simulates uploading a file to Google Drive and returns a mock URL.
+ */
+export async function uploadFileToDrive(file: File): Promise<{ url: string }> {
+  console.log("Simulating file upload to Google Drive:", file.name);
+
+  if (!isSignedIn) {
+    throw new Error("Google 계정에 로그인해야 합니다.");
+  }
+
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  const mockFileId = `file_${Date.now()}`;
+  const url = `https://drive.google.com/file/d/${mockFileId}`;
+  console.log(`Mock file uploaded at: ${url}`);
+  return { url };
+}
