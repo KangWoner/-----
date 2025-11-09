@@ -23,6 +23,9 @@ from dotenv import load_dotenv
 # datetime: 날짜와 시간 처리
 from datetime import datetime
 
+# Claude API 연동 모듈 (우리가 만든 모듈!)
+from utils.claude_api import send_to_claude
+
 # ============================================
 # 2. 환경 변수 로드
 # ============================================
@@ -147,18 +150,28 @@ def send_message():
                 'error': 'Claude API 키가 설정되지 않았습니다. .env 파일을 확인해주세요.'
             }), 500  # 500: Internal Server Error
 
-        # ===== 🚧 임시 응답 (나중에 실제 Claude API로 교체) =====
-        # 실제 Claude API 연동은 다음 단계에서 구현합니다
-        # 지금은 테스트용 더미 응답을 반환합니다
+        # ===== 5. Claude API 호출 =====
+        # 우리가 만든 send_to_claude 함수를 사용합니다!
+        result = send_to_claude(
+            user_message=user_message,
+            conversation_history=conversation_history,
+            api_key=CLAUDE_API_KEY
+        )
 
-        ai_response = f"[테스트 응답] 안녕하세요! 쏘미입니다. 😊\n\n당신의 메시지: '{user_message}'\n\n실제 Claude API 연동은 다음 단계에서 구현할 예정입니다!"
-
-        # 5. 성공 응답 반환
-        return jsonify({
-            'success': True,
-            'ai_message': ai_response,
-            'timestamp': datetime.now().isoformat()
-        }), 200  # 200: OK (성공)
+        # 6. Claude API 응답 처리
+        if result['success']:
+            # 성공: AI 응답을 클라이언트에게 반환
+            return jsonify({
+                'success': True,
+                'ai_message': result['message'],
+                'timestamp': datetime.now().isoformat()
+            }), 200  # 200: OK (성공)
+        else:
+            # 실패: 에러 메시지 반환
+            return jsonify({
+                'success': False,
+                'error': result.get('error', 'AI 응답 생성 중 오류가 발생했습니다.')
+            }), 500
 
     except Exception as e:
         # 예상치 못한 에러 처리
